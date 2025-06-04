@@ -6,9 +6,16 @@ const port = process.env.PORT || 4000;
 
 const server = http.createServer( (req,res)=> {
     //For CORS
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+   res.setHeader('Access-Control-Allow-Origin', '*');
+   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+   //Pre-Flight
+    if (req.method === 'OPTIONS') {
+    res.writeHead(200);
+    res.end();
+    return;
+  }
 
     const [url,query] = req.url.split('?')
     const method = req.method
@@ -51,7 +58,7 @@ const server = http.createServer( (req,res)=> {
     })
   }
   else if(url === '/delete-user' && method==='DELETE') {
-    const delete_user_email = params.get('E-mail')
+    const delete_user_email = params.get('email');
     console.log("Split", delete_user_email)
 
     db.db.query('DELETE FROM users WHERE email = ?',[delete_user_email],(err) => {
